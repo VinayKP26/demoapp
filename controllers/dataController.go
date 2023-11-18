@@ -49,4 +49,5 @@ func (c *Controllers) DataController(w http.ResponseWriter, r *http.Request) {
 
 	// Write the JSON response back to the client
 	w.Write(responseJSON)
+
 }
