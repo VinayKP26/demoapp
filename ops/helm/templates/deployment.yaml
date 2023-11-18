@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Chart.Name}}
+  namespace: {{.Values.namespace}}
+  labels:
+    app: {{.Chart.Name}}
+    version: {{.Chart.AppVersion}}
+spec:
+  replicas: {{.Values.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Chart.Name}}
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 0
+  template:
+    metadata:
+      name: {{.Chart.Name}}
+      labels:
+        app: {{.Chart.Name}}
+        version: {{.Chart.AppVersion}}
+    spec:
+      imagePullSecrets:
+      - name: {{.Values.imagePullSecrets}}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: {{.Values.securityContext.runAsUser}}
+        runAsGroup: {{.Values.securityContext.runAsGroup}}
+      containers:
+      - name: {{.Chart.Name}}
+        image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+        imagePullPolicy: Always
+        securityContext:
+          privileged: {{.Values.securityContext.privileged}}
+        ports:
+        - name: http
+          containerPort: {{.Values.service.targetPort}}
+          protocol: TCP
+        env:
+        - name: "PORT"
+          value: "{{.Values.service.targetPort}}"
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 50m
+          requests:
+            memory: 50Mi
+            cpu: 10m
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health/check
+            port: {{.Values.service.targetPort}}
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        redinessProbe:
+          httpGet:
+            path: /api/v1/health/check
+            port: {{.Values.service.targetPort}}
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        
+
+
+        

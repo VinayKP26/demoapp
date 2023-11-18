@@ -1,0 +1,14 @@
+namespace: demo 
+replicas: 1
+image:
+  repository: "vinaykp26/demoapp"
+  tag: "1.0.2"
+imagePullSecrets: docker-registry
+securityContext:
+  privileged: false
+  runAsUser: 1001
+  runAsGroup: 1001
+service:
+  type: ClusterIP
+  port: "8001"
+  targetPort: "8001"
