@@ -33,6 +33,21 @@ kubectl label namespace demo istio-injection=enabled
 ```
 
 Go to root path of source code (cd ./demoapp/)
+
+Update the below required value as per your domain or ip in values.yaml file of ops/helm
+
+```
+
+istio:
+  enabled: true
+  istioIngressNamespace: istio-system
+  gatewayName: demo-gateway
+  host: "35.223.164.29.nip.io"
+  uri:
+    prefix: "/api/v1/"
+
+```
+
 Install the app in demo namespace.
 ```
 helm upgrade --install demo ops/helm -n demo
