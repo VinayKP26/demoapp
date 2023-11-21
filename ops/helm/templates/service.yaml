@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{.Chart.Name}}
+  name: {{ include "chart.name" . }}
+  namespace: {{.Values.namespace}}
   labels:
-    app: {{.Chart.Name}}
-    version: {{.Chart.AppVersion}}
+    {{- include "chart.labels" . | nindent 4 }}
 spec:
   type: {{.Values.service.type}}
   selector:
-    app: {{.Chart.Name}}
+    {{- include "chart.selectorLabels" . | nindent 4 }}
   ports:
   - name: http
     port: {{.Values.service.port}}
     targetPort: {{.Values.service.targetPort}}
+  externalTrafficPolicy: Cluster

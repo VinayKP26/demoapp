@@ -1,26 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.Chart.Name}}
+  name: {{ include "chart.name" . }}
   namespace: {{.Values.namespace}}
   labels:
-    app: {{.Chart.Name}}
-    version: {{.Chart.AppVersion}}
+    {{- include "chart.labels" . | nindent 4 }}
 spec:
   replicas: {{.Values.replicas}}
   selector:
     matchLabels:
-      app: {{.Chart.Name}}
+      {{- include "chart.selectorLabels" . | nindent 6 }}
   strategy:
     rollingUpdate:
-      maxSurge: 50%
-      maxUnavailable: 0
+      maxSurge: 0
+      maxUnavailable: 1
   template:
     metadata:
-      name: {{.Chart.Name}}
+      name: {{ include "chart.name" . }}
       labels:
-        app: {{.Chart.Name}}
-        version: {{.Chart.AppVersion}}
+        {{- include "chart.selectorLabels" . | nindent 8 }}
     spec:
       imagePullSecrets:
       - name: {{.Values.imagePullSecrets}}
@@ -42,32 +40,28 @@ spec:
         - name: "PORT"
           value: "{{.Values.service.targetPort}}"
         resources:
-          limits:
-            memory: 200Mi
-            cpu: 50m
-          requests:
-            memory: 50Mi
-            cpu: 10m
+          {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:
           httpGet:
             path: /api/v1/health/check
             port: {{.Values.service.targetPort}}
             scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 30
-          timeoutSeconds: 10
-          failureThreshold: 3
-          successThreshold: 1
-        redinessProbe:
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+        readinessProbe:
           httpGet:
             path: /api/v1/health/check
             port: {{.Values.service.targetPort}}
             scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 5
-          failureThreshold: 3
-          successThreshold: 1
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+
         
 
 
