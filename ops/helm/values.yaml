@@ -36,6 +36,6 @@ istio:
   enabled: true
   istioIngressNamespace: istio-system
   gatewayName: demo-gateway
-  host: "35.223.164.29.nip.io"
+  host: "34.170.40.228.nip.io"
   uri:
     prefix: "/api/v1/"

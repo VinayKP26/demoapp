@@ -14,7 +14,7 @@
 
 Generate the certificate and key using openssl.
 ```
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes
 ```
 
 Create the tls secret in istio-namespace.
